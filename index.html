@@ -1,0 +1,218 @@
+from flask import Flask, render_template, request, jsonify
+
+app = Flask(_name_)
+
+# Кітаптардың бастапқы тізімі
+books = {
+    "Ғылым": [
+        {"title": "Физика негіздері", "status": "Бар", "borrowed_by": ""},
+        {"title": "Химияның құпиялары", "status": "Алып кетті", "borrowed_by": "Айдос"}
+    ],
+    "Әдебиет": [
+        {"title": "Абай жолы", "status": "Бар", "borrowed_by": ""},
+        {"title": "Көшпенділер", "status": "Жоқ", "borrowed_by": ""}
+    ],
+    "Тарих": [
+        {"title": "Қазақ хандығы", "status": "Бар", "borrowed_by": ""},
+        {"title": "Ежелгі өркениеттер", "status": "Алып кетті", "borrowed_by": "Диас"}
+    ],
+    "Техника": [
+        {"title": "Бағдарламалау негіздері", "status": "Жоқ", "borrowed_by": ""},
+        {"title": "Электроника", "status": "Бар", "borrowed_by": ""}
+    ]
+}
+
+# Басты бет
+@app.route('/')
+def index():
+    return render_template("index.html", books=books)
+
+# Кітаптың статусын өзгерту
+@app.route('/update_status', methods=['
+
+Егер *тек HTML, CSS, және JavaScript* арқылы кітапхананы басқару керек болса, онда барлық функцияларды *JavaScript* арқылы жасаймыз. Бұл сайт *серверсіз, тек браузерде жұмыс істейді*.  
+
+---
+
+## *📌 Функциялары:*  
+✅ *Кітаптарды көру*  
+✅ *Кітапты іздеу*  
+✅ *Статусты өзгерту* ("Бар" → "Алып кетті (адам)" → "Жоқ")  
+✅ *Адамның атын енгізу*  
+✅ *Барлық дерек жергілікті жадта сақталады (localStorage)*  
+
+---
+
+### *🌍 Код (HTML + CSS + JavaScript)*
+Бұл кодты *index.html* файлына сақтап, тікелей шолғышта ашсаң жеткілікті.  
+
+```html
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Кітапхана</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        main {
+            padding: 20px;
+        }
+        .search-box {
+            margin-bottom: 15px;
+            padding: 10px;
+            width: 100%;
+            max-width: 400px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .category {
+            background-color: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .book-list {
+            list-style: none;
+            padding: 0;
+        }
+        .book-list li {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .status {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        .available { color: green; }
+        .not-available { color: red; }
+        .borrowed { color: orange; }
+        button {
+            cursor: pointer;
+            padding: 5px 10px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>📚 Кітапхана</h1>
+</header>
+
+<main>
+    <input type="text" class="search-box" placeholder="🔎 Кітапты іздеу..." oninput="searchBooks()">
+    <div id="library"></div>
+</main>
+
+<script>
+    let books = JSON.parse(localStorage.getItem("books")) || {
+        "Ғылым": [
+            { title: "Физика негіздері", status: "Бар", borrowedBy: "" },
+            { title: "Химияның құпиялары", status: "Алып кетті", borrowedBy: "Айдос" }
+        ],
+        "Әдебиет": [
+            { title: "Абай жолы", status: "Бар", borrowedBy: "" },
+            { title: "Көшпенділер", status: "Жоқ", borrowedBy: "" }
+        ],
+        "Тарих": [
+            { title: "Қазақ хандығы", status: "Бар", borrowedBy: "" },
+            { title: "Ежелгі өркениеттер", status: "Алып кетті", borrowedBy: "Диас" }
+        ],
+        "Техника": [
+            { title: "Бағдарламалау негіздері", status: "Жоқ", borrowedBy: "" },
+            { title: "Электроника", status: "Бар", borrowedBy: "" }
+        ]
+    };
+
+    function saveBooks() {
+        localStorage.setItem("books", JSON.stringify(books));
+    }
+
+    function updateLibrary() {
+        const libraryDiv = document.getElementById("library");
+        libraryDiv.innerHTML = "";
+
+        for (const category in books) {
+            const section = document.createElement("div");
+            section.classList.add("category");
+            section.innerHTML = <h2>${category}</h2><ul class="book-list"></ul>;
+
+            const bookList = section.querySelector(".book-list");
+
+            books[category].forEach((book, index) => {
+                const listItem = document.createElement("li");
+
+                let statusClass = "";
+                if (book.status === "Бар") statusClass = "available";
+                else if (book.status === "Жоқ") statusClass = "not-available";
+                else if (book.status === "Алып кетті") statusClass = "borrowed";
+
+                let statusText = book.status;
+                if (book.status === "Алып кетті" && book.borrowedBy) {
+                    statusText += ` (${book.borrowedBy})`;
+                }
+
+                listItem.innerHTML = `
+                    <span>${book.title}</span>
+                    <span class="status ${statusClass}">${statusText}</span>
+                    <button onclick="toggleStatus('${category}', ${index})">🔄 Өзгерту</button>
+                `;
+                bookList.appendChild(listItem);
+            });
+
+            libraryDiv.appendChild(section);
+        }
+    }
+
+    function toggleStatus(category, index) {
+        const statuses = ["Бар", "Алып кетті", "Жоқ"];
+        const book = books[category][index];
+
+        let currentIndex = statuses.indexOf(book.status);
+        let newStatus = statuses[(currentIndex + 1) % statuses.length];
+
+        if (newStatus === "Алып кетті") {
+            let borrower = prompt("📌 Кітапты алған адамның атын енгізіңіз:");
+            if (!borrower) {
+                return;
+            }
+            book.borrowedBy = borrower;
+        } else {
+            book.borrowedBy = "";
+        }
+
+        book.status = newStatus;
+        saveBooks();
+        updateLibrary();
+    }
+
+    function searchBooks() {
+        const query = document.querySelector(".search-box").value.toLowerCase();
+        document.querySelectorAll(".book-list li").forEach(item => {
+            const title = item.querySelector("span").textContent.toLowerCase();
+            item.style.display = title.includes(query) ? "" : "none";
+        });
+    }
+
+    updateLibrary();
+</script>
+
+</body>
+</html>
